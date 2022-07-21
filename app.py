@@ -14,6 +14,16 @@ default_app = initialize_app(cred)
 db = firestore.client()
 fire_db = db.collection('demo')
 
+
+@app.route('/', methods=['GET'])
+def test_root():
+    """
+        create() : Add document to Firestore collection with request body.
+        Ensure you pass a custom ID as part of json body in post request,
+        e.g. json={'id': '1', 'title': 'Write a blog post'}
+    """
+    return jsonify({"success": True, "Test": True}), 200
+
 @app.route('/add', methods=['POST'])
 def create():
     """
