@@ -35,7 +35,8 @@ fire_db = db.collection('demo')
 
 @app.route('/map')
 def map_urls():
-    return list(app.url_map)
+    lg.info(app.url_map)
+    return str(app.url_map)
 
 # Sanity check route | health-ping
 @bp.route('/ping', methods=['GET'])
