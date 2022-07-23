@@ -20,10 +20,9 @@ lg = logging.getLogger(__name__)
 app = Flask(__name__)
 app.config.from_object(__name__)
 
-# enable CORS
 
-# Look forward the file
-cred = credentials.Certificate('key.json')
+# Look forward the file in a secret related in Google Run
+cred = credentials.Certificate(os.getenv("firebase"))
 default_app = initialize_app(cred)
 db = firestore.client()
 fire_db = db.collection('demo')
