@@ -33,6 +33,10 @@ default_app = initialize_app(cred)
 db = firestore.client()
 fire_db = db.collection('demo')
 
+@app.route('/map')
+def map_urls():
+    return app.url_map
+
 # Sanity check route | health-ping
 @bp.route('/ping', methods=['GET'])
 def ping_pong():
@@ -166,4 +170,3 @@ if __name__ == '__main__':
     app.register_error_handler(404, page_not_found)
     app.register_error_handler(500, server_error)
     app.run(threaded=True, host='0.0.0.0', port=port)
-    lg.info(app.url_map)
