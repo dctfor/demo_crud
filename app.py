@@ -50,6 +50,7 @@ def site_map():
             url = url_for(rule.endpoint, **(rule.defaults or {}))
             links.append((url, rule.endpoint))
     # links is now a list of url, endpoint tuples
+    return links
 
 # Sanity check route | health-ping
 @bp.route('/ping', methods=['GET'])
