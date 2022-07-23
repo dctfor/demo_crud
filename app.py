@@ -12,8 +12,9 @@ from firebase_admin import credentials, firestore, initialize_app
 client = google.cloud.logging.Client()
 client.setup_logging()
 
-LOGGING_FORMAT = "[%(filename)s:%(lineno)d] %(message)s"
-logging.basicConfig(format=LOGGING_FORMAT)
+# # Commented logging format as in gcloud logging is ignored
+# LOGGING_FORMAT = "[%(filename)s:%(lineno)d] %(message)s"
+# logging.basicConfig(format=LOGGING_FORMAT)
 lg = logging.getLogger(__name__)
 
 
@@ -165,3 +166,4 @@ if __name__ == '__main__':
     app.register_error_handler(404, page_not_found)
     app.register_error_handler(500, server_error)
     app.run(threaded=True, host='0.0.0.0', port=port)
+    lg.info(app.url_map)
