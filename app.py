@@ -20,12 +20,7 @@ lg = logging.getLogger(__name__)
 
 # Initialize Flask app
 app = Flask(__name__)
-app.config.from_object(__name__)
-cors = CORS(app, resources={r"/api/*":{"origins":"*"}})
-
-# Create blueprint for prefix all the current apis
-bp = Blueprint('apisv1', __name__, template_folder='templates')
-app.register_blueprint(bp, url_prefix='/api/v1')
+# app.config.from_object(__name__)
 
 # Look forward the file in a secret related in Google Run
 cred = credentials.Certificate(os.getenv("firebase"))
@@ -184,4 +179,8 @@ port = int(os.environ.get('PORT', 8080))
 if __name__ == '__main__':
     app.register_error_handler(404, page_not_found)
     app.register_error_handler(500, server_error)
+    cors = CORS(app, resources={r"/api/*":{"origins":"*"}})
+    # Create blueprint for prefix all the current apis
+    bp = Blueprint('apisv1', __name__, template_folder='templates')
+    app.register_blueprint(bp, url_prefix='/api/v1')
     app.run(threaded=True, host='0.0.0.0', port=port)
