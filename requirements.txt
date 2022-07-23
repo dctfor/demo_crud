@@ -1,5 +1,6 @@
 # requirements.txt
 flask
+flask-cors
 firebase_admin
 google-cloud-storage
 google-cloud-logging

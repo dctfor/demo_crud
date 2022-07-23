@@ -4,8 +4,8 @@
 import os, logging
 import google.cloud.logging
 
-from flask import Flask, request, jsonify
-from flask import render_template
+from flask import Flask, request, jsonify, render_template, Blueprint
+from flask_cors import CORS
 from firebase_admin import credentials, firestore, initialize_app
 
 #init logger
@@ -16,10 +16,15 @@ LOGGING_FORMAT = "[%(filename)s:%(lineno)d] %(message)s"
 logging.basicConfig(format=LOGGING_FORMAT)
 lg = logging.getLogger(__name__)
 
+
 # Initialize Flask app
 app = Flask(__name__)
 app.config.from_object(__name__)
+cors = CORS(app, resources={r"/api/*":{"origins":"*"}})
 
+# Create blueprint for prefix all the current apis
+bp = Blueprint('apisv1', __name__, template_folder='templates')
+app.register_blueprint(bp, url_prefix='/api/v1')
 
 # Look forward the file in a secret related in Google Run
 cred = credentials.Certificate(os.getenv("firebase"))
@@ -28,20 +33,20 @@ db = firestore.client()
 fire_db = db.collection('demo')
 
 # Sanity check route | health-ping
-@app.route('/ping', methods=['GET'])
+@apisv1.route('/ping', methods=['GET'])
 def ping_pong():
     lg.info("running ping_pong")
     return jsonify('pong!'), 200
     
     
 # Sanity check route | health-ping
-@app.route('/error500', methods=['GET'])
+@apisv1.route('/error500', methods=['GET'])
 def error_raise():
     raise Exception("Sorry, it's not you, it's me")
     return "", 200
 
 # Api for testing/debugging response codes
-@app.route('/testcode/<code>', methods=['GET'])
+@apisv1.route('/testcode/<code>', methods=['GET'])
 def debug_response(code=200):
     lg.info("running debug_response")
     if code == 404:
@@ -50,7 +55,7 @@ def debug_response(code=200):
         return render_template('Error500.html'), 500
     return "", code
 
-@app.route('/', methods=['GET'])
+@apisv1.route('/', methods=['GET'])
 def im_root():
     lg.info("running im_root")
     """
@@ -62,7 +67,7 @@ def im_root():
     return render_template('index.html', data=data), 418 #this error code is just kinda an easter egg :)
 
 
-@app.route('/add', methods=['POST'])
+@apisv1.route('/add', methods=['POST'])
 def create():
     lg.info("running create")
     """
@@ -82,8 +87,8 @@ def create():
     except Exception as e:
         return f"An Error Occurred: {e}"
 
-@app.route('/list', methods=['GET'])
-@app.route('/list/<id>', methods=['GET'])
+@apisv1.route('/list', methods=['GET'])
+@apisv1.route('/list/<id>', methods=['GET'])
 def read(id=None):
     lg.info("running read")
     """
@@ -103,7 +108,7 @@ def read(id=None):
     except Exception as e:
         return f"An Error Occurred: {e}"
 
-@app.route('/update', methods=['POST', 'PUT'])
+@apisv1.route('/update', methods=['POST', 'PUT'])
 def update():
     lg.info("running update")
     """
@@ -118,8 +123,8 @@ def update():
     except Exception as e:
         return f"An Error Occurred: {e}"
 
-@app.route('/delete', methods=['GET', 'DELETE'])
-@app.route('/delete/<id>', methods=['GET', 'DELETE'])
+@apisv1.route('/delete', methods=['GET', 'DELETE'])
+@apisv1.route('/delete/<id>', methods=['GET', 'DELETE'])
 def delete(id=None):
     lg.info("running delete")
     """
