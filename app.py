@@ -33,20 +33,20 @@ db = firestore.client()
 fire_db = db.collection('demo')
 
 # Sanity check route | health-ping
-@apisv1.route('/ping', methods=['GET'])
+@bp.route('/ping', methods=['GET'])
 def ping_pong():
     lg.info("running ping_pong")
     return jsonify('pong!'), 200
     
     
 # Sanity check route | health-ping
-@apisv1.route('/error500', methods=['GET'])
+@bp.route('/error500', methods=['GET'])
 def error_raise():
     raise Exception("Sorry, it's not you, it's me")
     return "", 200
 
 # Api for testing/debugging response codes
-@apisv1.route('/testcode/<code>', methods=['GET'])
+@bp.route('/testcode/<code>', methods=['GET'])
 def debug_response(code=200):
     lg.info("running debug_response")
     if code == 404:
@@ -55,7 +55,7 @@ def debug_response(code=200):
         return render_template('Error500.html'), 500
     return "", code
 
-@apisv1.route('/', methods=['GET'])
+@bp.route('/', methods=['GET'])
 def im_root():
     lg.info("running im_root")
     """
@@ -67,7 +67,7 @@ def im_root():
     return render_template('index.html', data=data), 418 #this error code is just kinda an easter egg :)
 
 
-@apisv1.route('/add', methods=['POST'])
+@bp.route('/add', methods=['POST'])
 def create():
     lg.info("running create")
     """
@@ -87,8 +87,8 @@ def create():
     except Exception as e:
         return f"An Error Occurred: {e}"
 
-@apisv1.route('/list', methods=['GET'])
-@apisv1.route('/list/<id>', methods=['GET'])
+@bp.route('/list', methods=['GET'])
+@bp.route('/list/<id>', methods=['GET'])
 def read(id=None):
     lg.info("running read")
     """
@@ -108,7 +108,7 @@ def read(id=None):
     except Exception as e:
         return f"An Error Occurred: {e}"
 
-@apisv1.route('/update', methods=['POST', 'PUT'])
+@bp.route('/update', methods=['POST', 'PUT'])
 def update():
     lg.info("running update")
     """
@@ -123,8 +123,8 @@ def update():
     except Exception as e:
         return f"An Error Occurred: {e}"
 
-@apisv1.route('/delete', methods=['GET', 'DELETE'])
-@apisv1.route('/delete/<id>', methods=['GET', 'DELETE'])
+@bp.route('/delete', methods=['GET', 'DELETE'])
+@bp.route('/delete/<id>', methods=['GET', 'DELETE'])
 def delete(id=None):
     lg.info("running delete")
     """
