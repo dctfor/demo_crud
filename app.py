@@ -20,14 +20,23 @@ lg = logging.getLogger(__name__)
 
 # Initialize Flask app
 app = Flask(__name__)
+
+#The blueprint for raw APIs in flask
 bp = Blueprint('apisv1', __name__, url_prefix='/api/v1')
-# app.config.from_object(__name__)
+#The blueprint to connect VUE w/ flask APIs
+demo = Blueprint('demov1', __name__, url_prefix='/api/v1/vue')
 
 # Look forward the file in a secret related in Google Run
 cred = credentials.Certificate(os.getenv("firebase"))
 default_app = initialize_app(cred)
 db = firestore.client()
-fire_db = db.collection('demo')
+
+# For current flask-only crud
+fire_db = db.collection('demo') 
+
+# For implementing a UI w/ CRUD (in VUE.js)
+contact_db = db.collection('contacts') 
+department_db = db.collection('departments')
 
 
 def has_no_empty_params(rule):
@@ -154,6 +163,114 @@ def delete(id=None):
     except Exception as e:
         return f"An Error Occurred: {e}"
 
+
+# these are for the CRUD in VUE.js
+
+@demo.route('contacts/add', methods=['POST'])
+def contact_create():
+    lg.info("running contact create")
+    try:
+        id = request.json['id']
+        if contact_db.document(id).get().to_dict() is None:
+            contact_db.document(id).set(request.json)
+            return jsonify({"success": True}), 200
+        return jsonify({"success": False, "reason": "ID already exists"}), 400
+    except Exception as e:
+        return f"An Error Occurred: {e}"
+
+@demo.route('contacts', methods=['GET'])
+@demo.route('contacts/<id>', methods=['GET'])
+def contact_read(id=None):
+    lg.info("running contact read")
+    try:
+        # Check if ID was passed to URL query or from actual url path
+        todo_id = request.args.get('id') if id is None else id
+        if todo_id:
+            todo = contact_db.document(todo_id).get()
+            return jsonify(todo.to_dict()), 200
+        else:
+            all_todos = [doc.to_dict() for doc in contact_db.stream()]
+            return jsonify(all_todos), 200
+    except Exception as e:
+        return f"An Error Occurred: {e}"
+
+@demo.route('contacts/update', methods=['POST', 'PUT'])
+def contact_update():
+    lg.info("running contact update")
+    try:
+        id = request.json['id']
+        contact_db.document(id).update(request.json)
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        return f"An Error Occurred: {e}"
+
+@demo.route('contacts/delete', methods=['GET', 'DELETE'])
+@demo.route('contacts/delete/<id>', methods=['GET', 'DELETE'])
+def contact_delete(id=None):
+    lg.info("running contact delete")
+    try:
+        # Check for ID in URL query
+        todo_id = request.args.get('id') if id is None else id
+        contact_db.document(todo_id).delete()
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        return f"An Error Occurred: {e}"
+
+#   For creating the departments
+
+@demo.route('departments/add', methods=['POST'])
+def contact_create():
+    lg.info("running contact create")
+    try:
+        id = request.json['id']
+        if department_db.document(id).get().to_dict() is None:
+            department_db.document(id).set(request.json)
+            return jsonify({"success": True}), 200
+        return jsonify({"success": False, "reason": "ID already exists"}), 400
+    except Exception as e:
+        return f"An Error Occurred: {e}"
+
+@demo.route('departments', methods=['GET'])
+@demo.route('departments/<id>', methods=['GET'])
+def contact_read(id=None):
+    lg.info("running contact read")
+    try:
+        # Check if ID was passed to URL query or from actual url path
+        todo_id = request.args.get('id') if id is None else id
+        if todo_id:
+            todo = department_db.document(todo_id).get()
+            return jsonify(todo.to_dict()), 200
+        else:
+            all_todos = [doc.to_dict() for doc in department_db.stream()]
+            return jsonify(all_todos), 200
+    except Exception as e:
+        return f"An Error Occurred: {e}"
+
+@demo.route('departments/update', methods=['POST', 'PUT'])
+def contact_update():
+    lg.info("running contact update")
+    try:
+        id = request.json['id']
+        department_db.document(id).update(request.json)
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        return f"An Error Occurred: {e}"
+
+@demo.route('departments/delete', methods=['GET', 'DELETE'])
+@demo.route('departments/delete/<id>', methods=['GET', 'DELETE'])
+def contact_delete(id=None):
+    lg.info("running contact delete")
+    try:
+        # Check for ID in URL query
+        todo_id = request.args.get('id') if id is None else id
+        department_db.document(todo_id).delete()
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        return f"An Error Occurred: {e}"
+
+
+
+
 #This is the error handling section
 def page_not_found(e):
     lg.info("running page_not_found")
@@ -179,6 +296,7 @@ if __name__ == '__main__':
     app.register_error_handler(404, page_not_found)
     app.register_error_handler(500, server_error)
     app.register_blueprint(bp)
+    app.register_blueprint(demo)
     cors = CORS(app, resources={r"/api/*":{"origins":"*"}})
     # Create blueprint for prefix all the current apis
     app.run(threaded=True, host='0.0.0.0', port=port)
