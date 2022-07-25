@@ -107,6 +107,7 @@ def create():
     try:
         if "id" not in request.json:
             id = str(uuid.uuid4())[:8]
+            request.json['id'] = id
         else:
             id = request.json['id']
         if fire_db.document(id).get().to_dict() is None:
@@ -176,6 +177,7 @@ def contact_create():
     try:
         if "id" not in request.json:
             id = str(uuid.uuid4())[:8]
+            request.json['id'] = id
         else:
             id = request.json['id']
         if contact_db.document(id).get().to_dict() is None:
@@ -231,6 +233,7 @@ def department_create():
     try:
         if "id" not in request.json:
             id = str(uuid.uuid4())[:8]
+            request.json['id'] = id
         else:
             id = request.json['id']
         if department_db.document(id).get().to_dict() is None:
