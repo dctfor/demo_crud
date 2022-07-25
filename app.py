@@ -181,6 +181,7 @@ def contact_create():
         else:
             id = request.json['id']
         if contact_db.document(id).get().to_dict() is None:
+            request.json['created_at']={".sv": "timestamp"}
             contact_db.document(id).set(request.json)
             return jsonify({"success": True}), 200
         return jsonify({"success": False, "reason": "ID already exists"}), 400
