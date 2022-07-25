@@ -1,7 +1,8 @@
 # app.py
 
 # Required imports
-import os, logging
+import os, logging, uuid
+
 import google.cloud.logging
 
 from flask import Flask, request, jsonify, render_template, Blueprint, url_for
@@ -101,16 +102,19 @@ def create():
         of json body in post request.
         i.e: 
         json={'id': '1', 'desc': 'Hey, ima desc in this app!'}
-        json={'id': '1U3H9FSIC7WK', 'some_text': 'I think this is string, ergo this is text'}
+        json={'id': '1U3H9FSI', 'some_text': 'I think this is string, ergo this is text'}
     """
     try:
-        id = request.json['id']
+        if "id" not in request.json:
+            id = str(uuid.uuid4())[:8]
+        else:
+            id = request.json['id']
         if fire_db.document(id).get().to_dict() is None:
             fire_db.document(id).set(request.json)
             return jsonify({"success": True}), 200
         return jsonify({"success": False, "reason": "ID already exists"}), 400
     except Exception as e:
-        return f"An Error Occurred: {e}"
+        return f"An Error Occurred: {e}", 500
 
 @bp.route('/list', methods=['GET'])
 @bp.route('/list/<id>', methods=['GET'])
@@ -131,7 +135,7 @@ def read(id=None):
             all_todos = [doc.to_dict() for doc in fire_db.stream()]
             return jsonify(all_todos), 200
     except Exception as e:
-        return f"An Error Occurred: {e}"
+        return f"An Error Occurred: {e}", 500
 
 @bp.route('/update', methods=['POST', 'PUT'])
 def update():
@@ -146,7 +150,7 @@ def update():
         fire_db.document(id).update(request.json)
         return jsonify({"success": True}), 200
     except Exception as e:
-        return f"An Error Occurred: {e}"
+        return f"An Error Occurred: {e}", 500
 
 @bp.route('/delete', methods=['GET', 'DELETE'])
 @bp.route('/delete/<id>', methods=['GET', 'DELETE'])
@@ -161,7 +165,7 @@ def delete(id=None):
         fire_db.document(todo_id).delete()
         return jsonify({"success": True}), 200
     except Exception as e:
-        return f"An Error Occurred: {e}"
+        return f"An Error Occurred: {e}", 500
 
 
 # these are for the CRUD in VUE.js
@@ -170,13 +174,16 @@ def delete(id=None):
 def contact_create():
     lg.info("running contact create")
     try:
-        id = request.json['id']
+        if "id" not in request.json:
+            id = str(uuid.uuid4())[:8]
+        else:
+            id = request.json['id']
         if contact_db.document(id).get().to_dict() is None:
             contact_db.document(id).set(request.json)
             return jsonify({"success": True}), 200
         return jsonify({"success": False, "reason": "ID already exists"}), 400
     except Exception as e:
-        return f"An Error Occurred: {e}"
+        return f"An Error Occurred: {e}", 500
 
 @demo.route('contacts', methods=['GET'])
 @demo.route('contacts/<id>', methods=['GET'])
@@ -192,7 +199,7 @@ def contact_read(id=None):
             all_todos = [doc.to_dict() for doc in contact_db.stream()]
             return jsonify(all_todos), 200
     except Exception as e:
-        return f"An Error Occurred: {e}"
+        return f"An Error Occurred: {e}", 500
 
 @demo.route('contacts/update', methods=['POST', 'PUT'])
 def contact_update():
@@ -202,7 +209,7 @@ def contact_update():
         contact_db.document(id).update(request.json)
         return jsonify({"success": True}), 200
     except Exception as e:
-        return f"An Error Occurred: {e}"
+        return f"An Error Occurred: {e}", 500
 
 @demo.route('contacts/delete', methods=['GET', 'DELETE'])
 @demo.route('contacts/delete/<id>', methods=['GET', 'DELETE'])
@@ -214,7 +221,7 @@ def contact_delete(id=None):
         contact_db.document(todo_id).delete()
         return jsonify({"success": True}), 200
     except Exception as e:
-        return f"An Error Occurred: {e}"
+        return f"An Error Occurred: {e}", 500
 
 #   For creating the departments
 
@@ -222,13 +229,16 @@ def contact_delete(id=None):
 def department_create():
     lg.info("running department create")
     try:
-        id = request.json['id']
+        if "id" not in request.json:
+            id = str(uuid.uuid4())[:8]
+        else:
+            id = request.json['id']
         if department_db.document(id).get().to_dict() is None:
             department_db.document(id).set(request.json)
             return jsonify({"success": True}), 200
         return jsonify({"success": False, "reason": "ID already exists"}), 400
     except Exception as e:
-        return f"An Error Occurred: {e}"
+        return f"An Error Occurred: {e}", 500
 
 @demo.route('departments', methods=['GET'])
 @demo.route('departments/<id>', methods=['GET'])
@@ -244,7 +254,7 @@ def department_read(id=None):
             all_todos = [doc.to_dict() for doc in department_db.stream()]
             return jsonify(all_todos), 200
     except Exception as e:
-        return f"An Error Occurred: {e}"
+        return f"An Error Occurred: {e}", 500
 
 @demo.route('departments/update', methods=['POST', 'PUT'])
 def department_update():
@@ -254,7 +264,7 @@ def department_update():
         department_db.document(id).update(request.json)
         return jsonify({"success": True}), 200
     except Exception as e:
-        return f"An Error Occurred: {e}"
+        return f"An Error Occurred: {e}", 500
 
 @demo.route('departments/delete', methods=['GET', 'DELETE'])
 @demo.route('departments/delete/<id>', methods=['GET', 'DELETE'])
@@ -266,7 +276,7 @@ def department_delete(id=None):
         department_db.document(todo_id).delete()
         return jsonify({"success": True}), 200
     except Exception as e:
-        return f"An Error Occurred: {e}"
+        return f"An Error Occurred: {e}", 500
 
 
 
