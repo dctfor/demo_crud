@@ -219,8 +219,8 @@ def contact_delete(id=None):
 #   For creating the departments
 
 @demo.route('departments/add', methods=['POST'])
-def contact_create():
-    lg.info("running contact create")
+def department_create():
+    lg.info("running department create")
     try:
         id = request.json['id']
         if department_db.document(id).get().to_dict() is None:
@@ -232,8 +232,8 @@ def contact_create():
 
 @demo.route('departments', methods=['GET'])
 @demo.route('departments/<id>', methods=['GET'])
-def contact_read(id=None):
-    lg.info("running contact read")
+def department_read(id=None):
+    lg.info("running department read")
     try:
         # Check if ID was passed to URL query or from actual url path
         todo_id = request.args.get('id') if id is None else id
@@ -247,8 +247,8 @@ def contact_read(id=None):
         return f"An Error Occurred: {e}"
 
 @demo.route('departments/update', methods=['POST', 'PUT'])
-def contact_update():
-    lg.info("running contact update")
+def department_update():
+    lg.info("running department update")
     try:
         id = request.json['id']
         department_db.document(id).update(request.json)
@@ -258,8 +258,8 @@ def contact_update():
 
 @demo.route('departments/delete', methods=['GET', 'DELETE'])
 @demo.route('departments/delete/<id>', methods=['GET', 'DELETE'])
-def contact_delete(id=None):
-    lg.info("running contact delete")
+def department_delete(id=None):
+    lg.info("running department delete")
     try:
         # Check for ID in URL query
         todo_id = request.args.get('id') if id is None else id
