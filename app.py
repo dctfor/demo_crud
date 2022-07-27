@@ -223,7 +223,7 @@ def contact_delete(id=None):
     try:
         # Check for ID in URL query
         c_id = request.args.get('id') if id is None else id
-        lg.info("[CONTACT DELETE] ID " + c_id)
+        lg.warn("[CONTACT DELETE] ID " + c_id)
         contact_db.document(c_id).delete()
         return jsonify({"success": True}), 200
     except Exception as e:
@@ -290,7 +290,7 @@ def department_delete(id=None):
 
 #This is the error handling section
 def page_not_found(e):
-    lg.info("running page_not_found")
+    lg.warn("running page_not_found")
     print("running page_not_found")
     '''
         page_not_found()... not sure why we got a request for a non existing url 
@@ -298,7 +298,7 @@ def page_not_found(e):
     return render_template('Error404.html'), 404
 
 def server_error(e):
-    lg.info("running server_error")
+    lg.error("running server_error")
     print("running server_error")
     '''
         server_error()... ammm Houston, we have a problem here
