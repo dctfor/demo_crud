@@ -181,6 +181,7 @@ def contact_create():
         else:
             id = request.json['id']
         if contact_db.document(id).get().to_dict() is None:
+            lg.info("[CONTACT CREATE] ID " + id)
             request.json['created_at']={".sv": "timestamp"}
             contact_db.document(id).set(request.json)
             return jsonify({"success": True}), 200
@@ -209,6 +210,7 @@ def contact_update():
     lg.info("running contact update")
     try:
         id = request.json['id']
+        lg.info("[CONTACT UPDATE] ID " + id)
         contact_db.document(id).update(request.json)
         return jsonify({"success": True}), 200
     except Exception as e:
@@ -220,8 +222,9 @@ def contact_delete(id=None):
     lg.info("running contact delete")
     try:
         # Check for ID in URL query
-        todo_id = request.args.get('id') if id is None else id
-        contact_db.document(todo_id).delete()
+        c_id = request.args.get('id') if id is None else id
+        lg.info("[CONTACT DELETE] ID " + c_id)
+        contact_db.document(c_id).delete()
         return jsonify({"success": True}), 200
     except Exception as e:
         return f"An Error Occurred: {e}", 500
