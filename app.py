@@ -50,7 +50,7 @@ bp = Blueprint('apisv1', __name__, url_prefix='/api/v1')
 demo = Blueprint('demov1', __name__, url_prefix='/api/v1/vue')
 
 # Look forward the file in a secret related in Google Run
-cred = credentials.Certificate("./key.json")
+cred = credentials.Certificate(os.getenv("firebase"))
 default_app = initialize_app(cred)
 db = firestore.client()
 
