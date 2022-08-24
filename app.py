@@ -4,36 +4,36 @@
 import os, logging, uuid, pathlib, requests, hmac, hashlib
 from collections.abc import Mapping
 from functools import wraps
-# import google.cloud.logging
+import google.cloud.logging
 
 from flask import Flask, request, jsonify, render_template, Blueprint, url_for, session, abort, redirect
 from flask_jwt import JWT, jwt_required, current_identity
 from flask_cors import CORS
 from firebase_admin import credentials, firestore, initialize_app
-from google.oauth2 import id_token
-from google_auth_oauthlib.flow import Flow
-from pip._vendor import cachecontrol
-import google.auth.transport.requests
+# from google.oauth2 import id_token
+# from google_auth_oauthlib.flow import Flow
+# from pip._vendor import cachecontrol
+# import google.auth.transport.requests
 
-app = Flask("GCP_FLSK_FRBS")  #naming our application
-app.secret_key = "christianlopez.mx"  #it is necessary to set a password when dealing with OAuth 2.0
+# app = Flask("GCP_FLSK_FRBS")  #naming our application
+# app.secret_key = "christianlopez.mx"  #it is necessary to set a password when dealing with OAuth 2.0
 
-#   Params necesary for working with the google OAuth
-os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"  #this is to set our environment to https because OAuth 2.0 only supports https environments
-GOOGLE_CLIENT_ID = "410342830455-ellv6s7gi13mhcd1cgpuaqk1qnpjts7l.apps.googleusercontent.com"  #enter your client id you got from Google console
-# GOOGLE_CLIENT_ID = "362896790228-enbe8d57gn1s1npbl29vikd8dppmhiti.apps.googleusercontent.com"  #enter your client id you got from Google console
-client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.json")  #set the path to where the .json file you got Google console is
+# #   Params necesary for working with the google OAuth
+# os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"  #this is to set our environment to https because OAuth 2.0 only supports https environments
+# GOOGLE_CLIENT_ID = "410342830455-ellv6s7gi13mhcd1cgpuaqk1qnpjts7l.apps.googleusercontent.com"  #enter your client id you got from Google console
+# # GOOGLE_CLIENT_ID = "362896790228-enbe8d57gn1s1npbl29vikd8dppmhiti.apps.googleusercontent.com"  #enter your client id you got from Google console
+# client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.json")  #set the path to where the .json file you got Google console is
 
-#   This is for the Google OAuth for login in with the googleaccount
-flow = Flow.from_client_secrets_file(  #Flow is OAuth 2.0 a class that stores all the information on how we want to authorize our users
-    client_secrets_file=client_secrets_file,
-    scopes=["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email", "openid"],  #here we are specifing what do we get after the authorization
-    redirect_uri="http://127.0.0.1:8080/callback"  #and the redirect URI is the point where the user will end up after the authorization
-)
+# #   This is for the Google OAuth for login in with the googleaccount
+# flow = Flow.from_client_secrets_file(  #Flow is OAuth 2.0 a class that stores all the information on how we want to authorize our users
+#     client_secrets_file=client_secrets_file,
+#     scopes=["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email", "openid"],  #here we are specifing what do we get after the authorization
+#     redirect_uri="http://127.0.0.1:8080/callback"  #and the redirect URI is the point where the user will end up after the authorization
+# )
 
 #init logger
-# client = google.cloud.logging.Client()
-# client.setup_logging()
+client = google.cloud.logging.Client()
+client.setup_logging()
 
 # # Commented logging format as in gcloud logging is ignored
 # LOGGING_FORMAT = "[%(filename)s:%(lineno)d] %(message)s"
@@ -42,7 +42,7 @@ lg = logging.getLogger(__name__)
 
 
 # Initialize Flask app
-# app = Flask(__name__)
+app = Flask(__name__)
 
 #The blueprint for raw APIs in flask
 bp = Blueprint('apisv1', __name__, url_prefix='/api/v1')
