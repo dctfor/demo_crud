@@ -32,8 +32,10 @@ from firebase_admin import credentials, firestore, initialize_app
 # )
 
 #init logger
-# client = google.cloud.logging.Client()
-# client.setup_logging()
+client = None
+if os.getenv("firebase"):
+    client = google.cloud.logging.Client()
+    client.setup_logging()
 
 # # Commented logging format as in gcloud logging is ignored
 # LOGGING_FORMAT = "[%(filename)s:%(lineno)d] %(message)s"
@@ -51,8 +53,8 @@ bp = Blueprint('apisv1', __name__, url_prefix='/api/v1')
 demo = Blueprint('demov1', __name__, url_prefix='/api/v1/vue')
 
 # Look forward the file in a secret related in Google Run
-cred = credentials.Certificate('key.json')
-# cred = credentials.Certificate(os.getenv("firebase"))
+
+cred = credentials.Certificate(os.getenv("firebase")) if os.getenv("firebase") else credentials.Certificate('key.json')
 default_app = initialize_app(cred)
 db = firestore.client()
 
