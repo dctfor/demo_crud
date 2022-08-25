@@ -32,8 +32,8 @@ from firebase_admin import credentials, firestore, initialize_app
 # )
 
 #init logger
-client = google.cloud.logging.Client()
-client.setup_logging()
+# client = google.cloud.logging.Client()
+# client.setup_logging()
 
 # # Commented logging format as in gcloud logging is ignored
 # LOGGING_FORMAT = "[%(filename)s:%(lineno)d] %(message)s"
@@ -51,7 +51,8 @@ bp = Blueprint('apisv1', __name__, url_prefix='/api/v1')
 demo = Blueprint('demov1', __name__, url_prefix='/api/v1/vue')
 
 # Look forward the file in a secret related in Google Run
-cred = credentials.Certificate(os.getenv("firebase"))
+cred = credentials.Certificate('key.json')
+# cred = credentials.Certificate(os.getenv("firebase"))
 default_app = initialize_app(cred)
 db = firestore.client()
 
@@ -81,9 +82,15 @@ def authenticate(username, password):
         lg.info(f"PostUser > > > {user}")
         if user["password"] == hashlib.md5(password.encode('utf-8')).hexdigest():
             lg.info(f"Entered pass > > > {hashlib.md5(password.encode('utf-8')).hexdigest()}")
-            return simple_user(str(uuid.uuid4())[:8],user["username"])
+            return simple_user(user["id"],user["username"])
 
-jwt = JWT(app, authenticate)
+def identity(payload):
+    print(f'payload {payload}')
+    user = user_db.where('id', '==', payload['identity']).get()
+    print(f'user {user}')
+    return user[0]
+
+jwt = JWT(app, authenticate, identity)
 
 
 def has_no_empty_params(rule):
