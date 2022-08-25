@@ -78,8 +78,8 @@ def authenticate(username, password):
         # lg.info(f"User > > > {user}")
         user = user[0].to_dict()
         lg.info(f"PostUser > > > {user}")
-        lg.info(f"Entered pass > > > {hashlib.md5(password.encode('utf-8')).hexdigest()}")
         if user["password"] == hashlib.md5(password.encode('utf-8')).hexdigest():
+            lg.info(f"Entered pass > > > {hashlib.md5(password.encode('utf-8')).hexdigest()}")
             return simple_user(str(uuid.uuid4())[:8],user["username"])
 
 jwt = JWT(app, authenticate)
