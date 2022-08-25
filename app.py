@@ -447,6 +447,7 @@ if __name__ == '__main__':
     app.register_error_handler(500, server_error)
     app.register_blueprint(bp)
     app.register_blueprint(demo)
-    cors = CORS(app, resources={r"/api/*":{"origins":"*"}})
+    # TODO: Fix the Cors to be route specific
+    cors = CORS(app, resources={r"*":{"origins":"*"}})
     # Create blueprint for prefix all the current apis
     app.run(threaded=True, host='0.0.0.0', port=port)
