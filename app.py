@@ -43,6 +43,7 @@ lg = logging.getLogger(__name__)
 
 # Initialize Flask app
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'super-secret'
 
 #The blueprint for raw APIs in flask
 bp = Blueprint('apisv1', __name__, url_prefix='/api/v1')
