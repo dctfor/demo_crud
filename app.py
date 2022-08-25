@@ -78,7 +78,7 @@ def authenticate(username, password):
         lg.info(f"User > > > {user}")
         user = user[0].to_dict()
         lg.info(f"PostUser > > > {user}")
-        if hmac.compare_digest(user["password"].encode('utf-8'), hashlib.md5(password.encode('utf-8')).hexdigest().encode('utf-8')):
+        if user["password"] == password:
             return simple_user(str(uuid.uuid4())[:8],user["username"])
 
 jwt = JWT(app, authenticate)
