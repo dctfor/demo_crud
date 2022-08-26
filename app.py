@@ -261,7 +261,11 @@ def contact_read(id=None):
         todo_id = request.args.get('id') if id is None else id
         if todo_id:
             todo = contact_db.document(todo_id).get()
-            return jsonify(todo.to_dict()), 200
+            todo = todo.to_dict()
+            department = department_db.document(todo_id['departmentId']).get()
+            department = department.to_dict()
+            todo['department'] = department['name']
+            return jsonify(todo), 200
         else:
             all_todos = [doc.to_dict() for doc in contact_db.stream()]
             return jsonify(all_todos), 200
