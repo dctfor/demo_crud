@@ -81,15 +81,13 @@ def authenticate(username, password):
     if user:
         # lg.info(f"User > > > {user}")
         user = user[0].to_dict()
-        lg.info(f"PostUser > > > {user}")
+        # lg.info(f"PostUser > > > {user}")
         if user["password"] == hashlib.md5(password.encode('utf-8')).hexdigest():
-            lg.info(f"Entered pass > > > {hashlib.md5(password.encode('utf-8')).hexdigest()}")
+            # lg.info(f"Entered pass > > > {hashlib.md5(password.encode('utf-8')).hexdigest()}")
             return simple_user(user["id"],user["username"])
 
 def identity(payload):
-    print(f'payload {payload}')
     user = user_db.where('id', '==', payload['identity']).get()
-    print(f'user {user}')
     return user[0]
 
 jwt = JWT(app, authenticate, identity)
@@ -262,7 +260,7 @@ def contact_read(id=None):
         if todo_id:
             todo = contact_db.document(todo_id).get()
             todo = todo.to_dict()
-            department = department_db.document(todo_id['departmentId']).get()
+            department = department_db.document(todo['departmentId']).get()
             department = department.to_dict()
             todo['department'] = department['name']
             return jsonify(todo), 200
