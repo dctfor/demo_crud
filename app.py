@@ -244,7 +244,7 @@ def contact_create():
             lg.info("[CONTACT CREATE] ID " + id)
             request.json['created_at']={".sv": "timestamp"}
             contact_db.document(id).set(request.json)
-            return jsonify({"success": True}), 200
+            return jsonify({"success": True ,"id": id }), 200
         return jsonify({"success": False, "reason": "ID already exists"}), 400
     except Exception as e:
         return f"An Error Occurred: {e}", 500
